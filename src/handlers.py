@@ -37,7 +37,7 @@ def get_resolution_video() -> InlineKeyboardMarkup:
 async def handle_resolution(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
 
-    if query and query.answer():
+    if query :
         await query.answer()
 
         if query.data == "annulla":
@@ -56,7 +56,7 @@ async def handle_resolution(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
 
-    if query and query.answer():
+    if query :
 
         await query.answer()
 
