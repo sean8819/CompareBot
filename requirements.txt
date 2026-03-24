@@ -1,0 +1,5 @@
+yt-dlp
+python-telegram-bot[job-queue]
+python-dotenv
+requests
+responses
