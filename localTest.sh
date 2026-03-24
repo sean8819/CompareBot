@@ -17,5 +17,6 @@ flake8 main.py src/
 echo -e "\n"
 
 echo "isort test"
+isort main.py src/handlers.py
 isort --check main.py src/
 echo -e "\n"
