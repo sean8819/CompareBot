@@ -5,6 +5,7 @@ from telegram.ext import ContextTypes
 
 from src.buttons import get_main_menu
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     if update.message and update.effective_user:
@@ -29,7 +30,9 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         parts = update.message.text.split(" ", 1)
 
         if len(parts) != 2:
-            await update.message.reply_text("Devi fornire un messaggio così formato /download <url risorsa>")
+            await update.message.reply_text(
+                "Devi fornire un messaggio così formato /download <url risorsa>"
+            )
             return
 
         url_video = parts[1]
@@ -40,8 +43,9 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             context.user_data["url"] = url_video
 
             await update.message.reply_text(
-            "Ciao, scarica il tuo contenuto!", reply_markup=get_main_menu()
-        )
+                "Ciao, scarica il tuo contenuto!", reply_markup=get_main_menu()
+            )
+
 
 async def beauty(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
