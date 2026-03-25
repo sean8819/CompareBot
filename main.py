@@ -33,7 +33,7 @@ def main():
     )
 
     print_logo()
-    print("Bot avviato correttamente...\nIn attesa di messagg...!")
+    print("Bot avviato correttamente...\nIn attesa di messaggi ;) ...!")
 
     app.run_polling()
 
