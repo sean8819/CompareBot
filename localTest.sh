@@ -1,19 +1,19 @@
 #!/bin/bash
 echo -e "\n========================== LOCAL TEST STARTED ========================== \n"
 echo "Black test"
-black main.py src/
+black main.py src/ tests/
 echo -e "\n"
 
 echo "MyPy test"
-mypy main.py src/
+mypy main.py src/ tests/
 echo -e "\n"
 
 echo "PyLint test"
-pylint main.py src/
+pylint main.py src/ tests/
 echo -e "\n"
 
 echo "flake8 test"
-flake8 main.py src/
+flake8 main.py src/ tests/
 echo -e "\n"
 
 echo "isort test"

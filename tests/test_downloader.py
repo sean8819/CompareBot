@@ -81,6 +81,9 @@ def test_getMedia_extract_info(mock_ydl_class):
 
 @patch("src.downloader.yt_dlp.YoutubeDL")
 def test_getMedia_get_error_on_exception(mock_ydl_class):
-    mock_ydl_class.return_value.__enter__.side_effect = yt_dlp.utils.DownloadError("Network error")
+    mock_ydl_class.return_value.__enter__.side_effect = yt_dlp.utils.DownloadError(
+        "Network error"
+    )
+
     result = get_media("https://url-non-valido.com", 720, "mp4")
     assert result == "error"
