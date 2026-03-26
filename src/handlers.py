@@ -27,6 +27,9 @@ async def service(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
 
+        if not update.message or not update.message.text:
+            return
+
         parts = update.message.text.split(" ", 1)
 
         if len(parts) != 2:
@@ -39,6 +42,9 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         # Verifico se è un url ben formato.
         if validators.url(url_video):
+
+            if context.user_data is None:
+                return
 
             context.user_data["url"] = url_video
 

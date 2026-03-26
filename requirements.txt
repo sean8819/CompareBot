@@ -1,4 +1,5 @@
 yt-dlp
+types-yt-dlp
 python-telegram-bot[job-queue]
 python-dotenv
 requests

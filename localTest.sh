@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo -e "\n========================== LOCAL TEST STARTED ========================== \n"
 echo "Black test"
 black main.py src/
 echo -e "\n"
@@ -17,6 +17,10 @@ flake8 main.py src/
 echo -e "\n"
 
 echo "isort test"
-isort main.py src/handlers.py
+isort main.py src/ tests/
 isort --check main.py src/
+echo -e "\n"
+
+echo "Pytest test"
+pytest tests/ -v --cov=src --cov-report=term-missing
 echo -e "\n"
