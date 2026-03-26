@@ -3,12 +3,11 @@ import os
 from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder, CallbackQueryHandler, CommandHandler
 
+from src.buttons import handle_buttons, handle_resolution
 from src.handlers import (
     about,
     beauty,
     download,
-    handle_buttons,
-    handle_resolution,
     service,
     start,
 )
@@ -33,7 +32,7 @@ def main():
     )
 
     print_logo()
-    print("Bot avviato correttamente...\nIn attesa di messagg...!")
+    print("Bot avviato correttamente...\nIn attesa di messaggi ;) ...!")
 
     app.run_polling()
 

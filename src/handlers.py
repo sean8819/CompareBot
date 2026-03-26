@@ -1,75 +1,9 @@
 # pylint: disable=unused-argument
-
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+import validators
+from telegram import Update
 from telegram.ext import ContextTypes
 
-
-def get_main_menu() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton("🎶 Audio", callback_data="audio"),
-                InlineKeyboardButton("📹 Video", callback_data="video"),
-            ],
-            [
-                InlineKeyboardButton("❌ Annulla", callback_data="annulla"),
-            ],
-        ]
-    )
-
-
-def get_resolution_video() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton("360p", callback_data="360"),
-                InlineKeyboardButton("480p", callback_data="480"),
-                InlineKeyboardButton("720p", callback_data="720"),
-            ],
-            [
-                InlineKeyboardButton("❌ Annulla", callback_data="annulla"),
-            ],
-        ]
-    )
-
-
-# la logica vera sta qui
-async def handle_resolution(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    query = update.callback_query
-
-    if query :
-        await query.answer()
-
-        if query.data == "annulla":
-            await query.edit_message_text("Operazione annullata.")
-
-        elif query.data == "360":
-            await query.edit_message_text("Scaricherai un video a 360p")
-
-        elif query.data == "480":
-            await query.edit_message_text("Scaricherai un video a 480p")
-
-        elif query.data == "720":
-            await query.edit_message_text("Scaricherai un video a 720p")
-
-
-async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    query = update.callback_query
-
-    if query :
-
-        await query.answer()
-
-        if query.data == "annulla":
-            await query.edit_message_text("Operazione annullata.")
-
-        elif query.data == "audio":
-            await query.edit_message_text("Scaricherai un mp3")
-
-        elif query.data == "video":
-            await query.edit_message_text(
-                "Scaricherai un mp4", reply_markup=get_resolution_video()
-            )
+from src.buttons import get_main_menu
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -92,9 +26,25 @@ async def service(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
-        await update.message.reply_text(
-            "Ciao, scarica il tuo contenuto!", reply_markup=get_main_menu()
-        )
+
+        parts = update.message.text.split(" ", 1)
+
+        if len(parts) != 2:
+            await update.message.reply_text(
+                "Devi fornire un messaggio così formato /download <url risorsa>"
+            )
+            return
+
+        url_video = parts[1]
+
+        # Verifico se è un url ben formato.
+        if validators.url(url_video):
+
+            context.user_data["url"] = url_video
+
+            await update.message.reply_text(
+                "Ciao, scarica il tuo contenuto!", reply_markup=get_main_menu()
+            )
 
 
 async def beauty(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
