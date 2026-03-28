@@ -2,6 +2,9 @@ import logging
 import os
 
 from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
 from telegram import BotCommand
 from telegram.ext import (
     ApplicationBuilder,
@@ -11,7 +14,7 @@ from telegram.ext import (
 )
 
 from src.buttons import handle_buttons, handle_resolution
-from src.handlers import about, beauty, download, service, start
+from src.handlers import about, beauty, download, lang, service, start
 from src.logo import print_logo
 
 
@@ -28,6 +31,7 @@ async def post_init(application):
             BotCommand("service", "Servizi disponibili"),
             BotCommand("beauty", "Bellezza del giorno"),
             BotCommand("about", "Info sul progetto"),
+            BotCommand("lang", "Cambia lingua del bot"),
         ]
     )
 
@@ -53,6 +57,7 @@ def main():
     app.add_handler(CommandHandler("about", about))
     app.add_handler(CommandHandler("service", service))
     app.add_handler(CommandHandler("beauty", beauty))
+    app.add_handler(CommandHandler("lang", lang))
     app.add_handler(
         CallbackQueryHandler(handle_buttons, pattern="^(audio|video|annulla)$")
     )
