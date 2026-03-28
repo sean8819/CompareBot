@@ -5,7 +5,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import TelegramError
 from telegram.ext import CallbackContext, ContextTypes
 
-from src.downloader import get_media
+from src.downloader import get_media, get_media_size
 
 
 def get_main_menu() -> InlineKeyboardMarkup:
@@ -101,49 +101,71 @@ async def handle_download(update: Update, context: CallbackContext) -> None:
 
     chat_id = update.callback_query.message.chat.id
 
-    await update.callback_query.edit_message_text("⏳ Download in corso...")
-
     if context.user_data is not None:
-        # Se è impostato a true facciamo iniziare il download audio e passiamo come video resolution None.
         if context.user_data.get("download_audio"):
-            file_path = await asyncio.to_thread(
-                get_media, context.user_data["url"], None, "mp3"
-            )
-        # Se è impostato a true facciamo iniziare il download video e passiamo come video resolution la risoluzione del video scelta.
+            media_type = "mp3"
+            resolution = None
         elif context.user_data.get("download_video"):
-            file_path = await asyncio.to_thread(
-                get_media,
-                context.user_data["url"],
-                context.user_data["video_resolution"],
-                "mp4",
-            )
+            media_type = "mp4"
+            resolution = context.user_data["video_resolution"]
         else:
             return
 
+        telegram_max_upload_file = 50 * 1024 * 1024
+
+        size = await asyncio.to_thread(
+            get_media_size, context.user_data["url"], resolution, media_type
+        )
+
+        if size > telegram_max_upload_file:
+            await update.callback_query.edit_message_text(
+                "❌ File troppo grande per Telegram (max 50MB)."
+            )
+            return
+
+        await update.callback_query.edit_message_text("⏳ Download in corso...")
+
+        file_path = await asyncio.to_thread(
+            get_media, context.user_data["url"], resolution, media_type
+        )
+
         if file_path and os.path.exists(file_path):
             try:
+                ext = os.path.splitext(file_path)
 
-                await context.bot.send_message(
-                    chat_id=chat_id,
-                    text="😎 Caricamento su Telegram in corso!",
-                )
-                with open(file_path, "rb") as f:
-                    await context.bot.send_document(
-                        chat_id=chat_id,
-                        document=f,
-                    )
+                if ext[1] == ".mp3":
+                    with open(file_path, "rb") as f:
+                        await context.bot.send_audio(
+                            chat_id=chat_id,
+                            audio=f,
+                            read_timeout=300,
+                            write_timeout=300,
+                            connect_timeout=30,
+                        )
+                else:
+                    with open(file_path, "rb") as f:
+                        await context.bot.send_video(
+                            chat_id=chat_id,
+                            video=f,
+                            read_timeout=300,
+                            write_timeout=300,
+                            connect_timeout=30,
+                        )
 
-                os.remove(file_path)  # eliminiamo il file dopo l'invio all'utente.
-
-            except TelegramError:
+            except TelegramError as e:
+                print(e)
                 await context.bot.send_message(
                     chat_id=chat_id,
                     text="Errore invio file!",
                 )
-            except OSError:
-                await context.bot.send_message(
-                    chat_id=chat_id,
-                    text="Errore eliminazione file!",
-                )
+            finally:
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                    except OSError:
+                        await context.bot.send_message(
+                            chat_id=chat_id,
+                            text="Errore eliminazione file!",
+                        )
         else:
             await context.bot.send_message(chat_id=chat_id, text="Download fallito.")

@@ -17,12 +17,28 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def about(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
-        await update.message.reply_text("Ciao informazioni sul progetto")
+
+        user = update.effective_user
+
+        if not user:
+            await update.message.reply_text("Ciao, utente informazioni sul progetto.")
+            return
+
+        await update.message.reply_text(
+            f"Ciao, {user.first_name} informazioni sul progetto."
+        )
 
 
 async def service(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
-        await update.message.reply_text('Ciao, {"Stato dei servizi"}!')
+
+        user = update.effective_user
+
+        if not user:
+            await update.message.reply_text("Ciao, utente stato dei servizi.")
+            return
+
+        await update.message.reply_text(f"Ciao, {user.first_name} stato dei servizi.")
 
 
 async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -47,8 +63,14 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         context.user_data["url"] = url_video
 
+        user = update.effective_user
+
+        if not user:
+            return
+
         await update.message.reply_text(
-            "Ciao, scarica il tuo contenuto!", reply_markup=get_main_menu()
+            f"{user.first_name}, scarica il tuo contenuto!",
+            reply_markup=get_main_menu(),
         )
 
 

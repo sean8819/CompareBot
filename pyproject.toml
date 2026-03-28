@@ -4,3 +4,6 @@ line_length = 120
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.coverage.run]
+omit = ["src/logo.py", "src/messages.py", "__init__.py"]
