@@ -7,7 +7,7 @@ from telegram.ext import ContextTypes
 
 from src.beauty import handle_beauty
 from src.buttons import get_main_menu
-
+import src.messages as message
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message and update.effective_user:
@@ -20,26 +20,26 @@ async def about(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
 
         user = update.effective_user
+        info = message.getAboutString()
 
         if not user:
-            await update.message.reply_text("Ciao, utente informazioni sul progetto.")
+            await update.message.reply_text(f"Ciao, utente.\n\n{info}",parse_mode='HTML',disable_web_page_preview=True)
             return
 
-        await update.message.reply_text(
-            f"Ciao, {user.first_name} informazioni sul progetto."
-        )
+        await update.message.reply_text(f"Ciao, {user.first_name}\n\n{info}", parse_mode='HTML',disable_web_page_preview=True)
 
 
 async def service(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
 
         user = update.effective_user
+        services = message.getServiceString()
 
         if not user:
-            await update.message.reply_text("Ciao, utente stato dei servizi.")
+            await update.message.reply_text(f"Ciao, utente.\n\n{services}",parse_mode='HTML')
             return
 
-        await update.message.reply_text(f"Ciao, {user.first_name} stato dei servizi.")
+        await update.message.reply_text(f"Ciao, {user.first_name}.\n\n{services}",parse_mode='HTML')
 
 
 async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
