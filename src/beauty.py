@@ -1,4 +1,4 @@
-import datetime
+import asyncio
 import os
 import random
 from datetime import date
@@ -10,35 +10,54 @@ from telegram import Update
 
 DEFAULT_QUERY = "woman,models,real,beauty,pose"
 DEFAULT_OUTPUT_PATH = "tmp/downloads/beauty_of_the_day.png"
+_BEAUTY_CACHE_LOCK = asyncio.Lock()
 
 
 async def handle_beauty(update: Update):
-    path = Path(DEFAULT_OUTPUT_PATH)
+    message = update.message
+    if message is None:
+        return
 
-    if not path.exists():
-        result = download_beauty_image()
-        if result is None:
-            print("Errore nel download dell'immagine")
-            return
-        path = Path(result)
-        print("non esiste ancora, la scarico")
-
-    elif datetime.datetime.fromtimestamp(path.stat().st_ctime).day == date.today().day:
-        print("già scaricata, invio l'immagine")
-
-    else:
-        result = download_beauty_image()
-        if result is None:
-            print("Errore nel download dell'immagine")
-            return
-        path = Path(result)
-        print("scarico l'immagine e la invio")
+    path = await get_beauty_image_path()
+    if path is None:
+        print("Errore nel download dell'immagine")
+        return
 
     with path.open("rb") as image_file:
-        message = update.message
-        if message is None or message.text is None:
-            return
         await message.reply_photo(photo=image_file)
+
+
+def is_beauty_image_fresh(path: Path, today: date | None = None) -> bool:
+    if not path.exists():
+        return False
+
+    if today is None:
+        today = date.today()
+
+    return date.fromtimestamp(path.stat().st_mtime) == today
+
+
+async def get_beauty_image_path(
+    output_path: str = DEFAULT_OUTPUT_PATH,
+    downloader=None,
+) -> Path | None:
+    if downloader is None:
+        downloader = download_beauty_image
+
+    async with _BEAUTY_CACHE_LOCK:
+        path = Path(output_path)
+
+        if is_beauty_image_fresh(path):
+            print("già scaricata, invio l'immagine")
+            return path
+
+        result = await asyncio.to_thread(downloader, DEFAULT_QUERY, output_path)
+        if result is None:
+            return None
+
+        path = Path(result)
+        print("immagine aggiornata, invio l'immagine")
+        return path
 
 
 def download_beauty_image(
