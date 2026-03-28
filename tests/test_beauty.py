@@ -1,7 +1,6 @@
 import asyncio
 import os
-from datetime import date, timedelta
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 
 from src import beauty
@@ -34,10 +33,14 @@ def test_is_beauty_image_fresh_returns_false_for_file_from_previous_day(tmp_path
     assert beauty.is_beauty_image_fresh(path, today=today) is False
 
 
-def test_get_beauty_image_path_returns_cached_file_without_downloading(tmp_path, monkeypatch):
+def test_get_beauty_image_path_returns_cached_file_without_downloading(
+    tmp_path, monkeypatch
+):
     path = tmp_path / "beauty.png"
     path.write_bytes(b"cached")
-    monkeypatch.setattr(beauty, "is_beauty_image_fresh", lambda candidate: candidate == path)
+    monkeypatch.setattr(
+        beauty, "is_beauty_image_fresh", lambda candidate: candidate == path
+    )
 
     downloader = MagicMock()
     to_thread = AsyncMock()
@@ -92,5 +95,7 @@ def test_handle_beauty_returns_when_download_fails(monkeypatch):
     asyncio.run(beauty.handle_beauty(update))
 
     message.reply_photo.assert_not_awaited()
+
+
 def _set_file_mtime(path, timestamp: float) -> None:
     os.utime(path, (timestamp, timestamp))
