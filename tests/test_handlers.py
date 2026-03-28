@@ -12,9 +12,7 @@ async def test_start():
     context = MagicMock()
 
     update.message.reply_text = AsyncMock()
-    update.effective_user.first_name = (
-        "Erika"
-    )
+    update.effective_user.first_name = "Erika"
 
     await start(update, context)
 
@@ -29,9 +27,7 @@ async def test_about():
     context = MagicMock()
 
     update.message.reply_text = AsyncMock()
-    update.effective_user.first_name = (
-        "Erika"
-    )
+    update.effective_user.first_name = "Erika"
 
     await about(update, context)
 
