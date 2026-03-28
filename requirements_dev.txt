@@ -8,3 +8,4 @@ black
 isort
 types-yt-dlp
 types-requests
+pytest-asyncio
