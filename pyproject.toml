@@ -7,3 +7,6 @@ ignore_missing_imports = true
 
 [tool.coverage.run]
 omit = ["src/logo.py", "src/messages.py", "__init__.py"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
