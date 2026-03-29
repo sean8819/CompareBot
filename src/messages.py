@@ -1,6 +1,11 @@
-def getAboutString() -> str:
-    return "Siamo una squadra fortissimi!"
+from telegram import User
+
+from src.i18n import get_string
 
 
-def getServiceString() -> str:
-    return "Download video ... ok!"
+def getAboutString(user: User) -> str:
+    return get_string(user, "about_string")
+
+
+def getServiceString(user: User) -> str:
+    return get_string(user, "services_string")

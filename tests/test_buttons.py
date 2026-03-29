@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, mock_open, patch
 
 import pytest
 from telegram import InlineKeyboardMarkup
@@ -14,24 +14,27 @@ from src.buttons import (
 
 
 def test_get_main_menu():
-    menu = get_main_menu()
+    mock_user = MagicMock()
+    mock_user.id = 12345
+    menu = get_main_menu(mock_user)
 
     assert isinstance(menu, InlineKeyboardMarkup)
     assert len(menu.inline_keyboard) == 2
     assert menu.inline_keyboard[0][0].text == "🎶 Audio"
     assert menu.inline_keyboard[0][1].text == "📹 Video"
-    assert menu.inline_keyboard[1][0].text == "❌ Annulla"
+    assert menu.inline_keyboard[1][0].text == "❌ Cancel"
 
 
 def test_get_resolution_video():
-    menu = get_resolution_video()
+    mock_user = MagicMock()
+    menu = get_resolution_video(mock_user)
 
     assert isinstance(menu, InlineKeyboardMarkup)
     assert len(menu.inline_keyboard) == 2
     assert menu.inline_keyboard[0][0].text == "360p"
     assert menu.inline_keyboard[0][1].text == "480p"
     assert menu.inline_keyboard[0][2].text == "720p"
-    assert menu.inline_keyboard[1][0].text == "❌ Annulla"
+    assert menu.inline_keyboard[1][0].text == "❌ Cancel"
 
 
 @pytest.mark.asyncio
@@ -48,7 +51,7 @@ async def test_handle_resolution_annulla():
 
     assert context.user_data == {}
     update.callback_query.edit_message_text.assert_called_once_with(
-        "Operazione annullata."
+        "Operation canceled."
     )
 
 
@@ -132,7 +135,7 @@ async def test_handle_buttons_annulla():
 
     assert context.user_data == {}
     update.callback_query.edit_message_text.assert_called_once_with(
-        "Operazione annullata."
+        "Operation canceled."
     )
 
 
@@ -170,7 +173,8 @@ async def test_handle_buttons_video():
     assert context.user_data["download_video"]
     assert not context.user_data["download_audio"]
     update.callback_query.edit_message_text.assert_called_once_with(
-        "Scaricherai un mp4", reply_markup=get_resolution_video()
+        "You are about to download an mp4",
+        reply_markup=get_resolution_video(update.effective_user),
     )
 
 
@@ -228,7 +232,7 @@ async def test_handle_download_file_too_large():
     with patch("src.buttons.get_media_size", return_value=100 * 1024 * 1024):
         await handle_download(update, context)
         update.callback_query.edit_message_text.assert_called_once_with(
-            "❌ File troppo grande per Telegram (max 50MB)."
+            "❌ File too large for Telegram (max 50MB)."
         )
 
 
@@ -248,7 +252,7 @@ async def test_handle_download_audio_success():
     with patch("src.buttons.get_media_size", return_value=10 * 1024 * 1024), patch(
         "src.buttons.get_media", return_value="/tmp/audio.mp3"
     ), patch("os.path.exists", return_value=True), patch("os.remove"), patch(
-        "builtins.open", MagicMock()
+        "builtins.open", mock_open(read_data="{}")
     ):
         await handle_download(update, context)
         context.bot.send_audio.assert_called_once()
@@ -271,7 +275,7 @@ async def test_handle_download_video_success():
     with patch("src.buttons.get_media_size", return_value=10 * 1024 * 1024), patch(
         "src.buttons.get_media", return_value="/tmp/video.mp4"
     ), patch("os.path.exists", return_value=True), patch("os.remove"), patch(
-        "builtins.open", MagicMock()
+        "builtins.open", mock_open(read_data="{}")
     ):
         await handle_download(update, context)
         context.bot.send_video.assert_called_once()
@@ -292,10 +296,12 @@ async def test_handle_download_failed():
 
     with patch("src.buttons.get_media_size", return_value=10 * 1024 * 1024), patch(
         "src.buttons.get_media", return_value="error"
-    ), patch("os.path.exists", return_value=False):
+    ), patch("os.path.exists", return_value=False), patch(
+        "builtins.open", mock_open(read_data="{}")
+    ):
         await handle_download(update, context)
         context.bot.send_message.assert_called_once_with(
-            chat_id=update.callback_query.message.chat.id, text="Download fallito."
+            chat_id=update.callback_query.message.chat.id, text="Download failed."
         )
 
 
@@ -317,11 +323,11 @@ async def test_handle_download_telegram_error():
     with patch("src.buttons.get_media_size", return_value=10 * 1024 * 1024), patch(
         "src.buttons.get_media", return_value="/tmp/audio.mp3"
     ), patch("os.path.exists", return_value=True), patch("os.remove"), patch(
-        "builtins.open", MagicMock()
+        "builtins.open", mock_open(read_data="{}")
     ):
         await handle_download(update, context)
         context.bot.send_message.assert_called_once_with(
-            chat_id=update.callback_query.message.chat.id, text="Errore invio file!"
+            chat_id=update.callback_query.message.chat.id, text="Error sending file!"
         )
 
 
@@ -344,10 +350,10 @@ async def test_handle_download_os_error_on_remove():
     ), patch("os.path.exists", return_value=True), patch(
         "os.remove", side_effect=OSError("errore")
     ), patch(
-        "builtins.open", MagicMock()
+        "builtins.open", mock_open(read_data="{}")
     ):
         await handle_download(update, context)
         context.bot.send_message.assert_called_once_with(
             chat_id=update.callback_query.message.chat.id,
-            text="Errore eliminazione file!",
+            text="Error removing file!",
         )
