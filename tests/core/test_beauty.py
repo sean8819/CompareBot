@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import requests
 
-from src import beauty
+from src.core import beauty
 
 
 def test_is_beauty_image_fresh_returns_false_when_file_does_not_exist(tmp_path):
