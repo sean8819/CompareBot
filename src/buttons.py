@@ -97,9 +97,12 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             elif query.data == "video":
                 context.user_data["download_video"] = True
                 context.user_data["download_audio"] = False
+                user = update.effective_user
+                if user is None:
+                    return
                 await query.edit_message_text(
                     get_string(update.effective_user, "confirm_mp4_download"),
-                    reply_markup=get_resolution_video(update.effective_user),
+                    reply_markup=get_resolution_video(user),
                 )
 
 

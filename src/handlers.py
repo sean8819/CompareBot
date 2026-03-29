@@ -1,8 +1,7 @@
 # pylint: disable=unused-argument
 
-
 import validators
-from telegram import Update, User
+from telegram import Update
 from telegram.ext import ContextTypes
 
 import src.messages as message
@@ -22,20 +21,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def about(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
-
         user = update.effective_user
-        info = message.getAboutString(user)
 
         if not user:
             await update.message.reply_text(
-                f"{get_string(user,'hello')} {get_string(user,'user')}\n\n{info}",
+                "Hello user.\n\nProject info.",
                 parse_mode="HTML",
                 disable_web_page_preview=True,
             )
             return
 
+        info = message.getAboutString(user)
         await update.message.reply_text(
-            f"{get_string(user,'hello')} {user.first_name}\n\n{info}",
+            f"{get_string(user, 'hello')} {user.first_name}\n\n{info}",
             parse_mode="HTML",
             disable_web_page_preview=True,
         )
@@ -45,15 +43,15 @@ async def service(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
 
         user = update.effective_user
-        services = message.getServiceString(user)
 
         if not user:
             await update.message.reply_text(
-                f"{get_string(user,'hello')} {get_string(user,'user')}\n\n{services}",
+                "Hello user.\n\nServices info.",
                 parse_mode="HTML",
             )
             return
 
+        services = message.getServiceString(user)
         await update.message.reply_text(
             f"{get_string(user,'hello')} {user.first_name}.\n\n{services}",
             parse_mode="HTML",
@@ -65,28 +63,26 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     user = update.effective_user
+    if not user:
+        return
+
     parts = update.message.text.split(" ", 1)
 
     if len(parts) != 2:
-        await update.message.reply_text({get_string(user, "download_params_error")})
+        await update.message.reply_text(get_string(user, "download_params_error"))
         return
 
     url_video = parts[1]
 
-    # Verifico se è un url ben formato.
     if validators.url(url_video):
-
         if context.user_data is None:
             return
 
         context.user_data["url"] = url_video
 
-        if not user:
-            return
-
         await update.message.reply_text(
-            f"{user.first_name}, {get_string(user,'download_content')}",
-            reply_markup=get_main_menu(update.effective_user),
+            f"{user.first_name}, {get_string(user, 'download_content')}",
+            reply_markup=get_main_menu(user),
         )
 
 
@@ -100,7 +96,7 @@ async def beauty(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     command = raw_text.split()[0]
 
     if raw_text != command:
-        await update.message.reply_text({get_string(user, "beauty_params_error")})
+        await update.message.reply_text(get_string(user, "beauty_params_error"))
         return
 
     await handle_beauty(update)

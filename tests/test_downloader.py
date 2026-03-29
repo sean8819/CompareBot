@@ -55,7 +55,7 @@ def test_outtmpl_contains_download_dir():
 def test_outtmpl_contains_template_titolo():
     opts = build_ydl_opts(720, "mp4", "05adfd95 ...")
     assert (
-        os.path.join(DOWNLOAD_DIR, f"{"05adfd95 ..."}.%(title)s.%(ext)s")
+        os.path.join(DOWNLOAD_DIR, f'{"05adfd95 ..."}.%(title)s.%(ext)s')
         in opts["outtmpl"]
     )
 

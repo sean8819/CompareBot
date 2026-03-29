@@ -17,7 +17,7 @@ async def test_start():
     await start(update, context)
 
     update.message.reply_text.assert_called_once_with(
-        "Ciao, Erika il tuo compare di fiducia ti aiuta a scaricare i tuoi media!"
+        "Hello Erika your trusty buddy is here to help you download your media!"
     )
 
 
@@ -27,12 +27,26 @@ async def test_about():
     context = MagicMock()
 
     update.message.reply_text = AsyncMock()
-    update.effective_user.first_name = "Erika"
+
+    mock_user = MagicMock()
+    mock_user.first_name = "Erika"
+    update.effective_user = mock_user
 
     await about(update, context)
 
+    expected_text = (
+        "Hello Erika\n\n"
+        "⚡️ <b>Video Downloader Bot</b>\n"
+        "Download your favorite videos from YouTube and other services in seconds.\n\n"
+        "Created and maintained by the team:\n"
+        "👨‍💻 Gianmarco [<a href='https://github.com/sean8819'>@sean8819</a>]\n"
+        "👨‍💻 Marce [<a href='https://github.com/Marss08'>@Marss08</a>]\n"
+        "👨‍💻 Enzo [<a href='https://github.com/enzobarba'>@enzobarba</a>]\n\n"
+        "❤️ Thank you for choosing our bot!"
+    )
+
     update.message.reply_text.assert_called_once_with(
-        "Ciao, Erika informazioni sul progetto."
+        expected_text, parse_mode="HTML", disable_web_page_preview=True
     )
 
 
@@ -46,7 +60,15 @@ async def test_service():
 
     await service(update, context)
 
-    update.message.reply_text.assert_called_once_with("Ciao, Erika stato dei servizi.")
+    expected_text = (
+        "Hello Erika.\n\n"
+        "🛠 <b>My services</b>\n\n"
+        "📥 <b>Media Download:</b> Send a link to easily download videos or audio tracks from YouTube and other supported services.\n\n"
+        "🌍 <b>Multilingual (i18n):</b> Native support for Italian and English.\n\n"
+        "🌅 <b>Daily Inspiration:</b> Receive the <i>beauty photo of the day</i> for a daily touch of wonder.\n\n"
+    )
+
+    update.message.reply_text.assert_called_once_with(expected_text, parse_mode="HTML")
 
 
 @pytest.mark.asyncio
@@ -69,7 +91,7 @@ async def test_download_no_url():
     await download(update, context)
 
     update.message.reply_text.assert_called_once_with(
-        "Devi fornire un messaggio così formato /download <url risorsa>"
+        "You need to format your message like this: /download <url>"
     )
 
 
@@ -100,7 +122,8 @@ async def test_download_valid_url():
 
     assert context.user_data["url"] == "https://www.youtube.com/watch?v=xxx"
     update.message.reply_text.assert_called_once_with(
-        "Erika, scarica il tuo contenuto!", reply_markup=get_main_menu()
+        "Erika, download your content!",
+        reply_markup=get_main_menu(update.effective_user),
     )
 
 
@@ -115,7 +138,7 @@ async def test_about_no_user():
     await about(update, context)
 
     update.message.reply_text.assert_called_once_with(
-        "Ciao, utente informazioni sul progetto."
+        "Hello user.\n\nProject info.", parse_mode="HTML", disable_web_page_preview=True
     )
 
 
@@ -129,7 +152,9 @@ async def test_service_no_user():
 
     await service(update, context)
 
-    update.message.reply_text.assert_called_once_with("Ciao, utente stato dei servizi.")
+    update.message.reply_text.assert_called_once_with(
+        "Hello user.\n\nServices info.", parse_mode="HTML"
+    )
 
 
 @pytest.mark.asyncio

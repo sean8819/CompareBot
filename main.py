@@ -2,9 +2,6 @@ import logging
 import os
 
 from dotenv import load_dotenv
-
-load_dotenv(override=True)
-
 from telegram import BotCommand
 from telegram.ext import (
     ApplicationBuilder,
@@ -38,7 +35,7 @@ async def post_init(application):
 
 def main():
 
-    load_dotenv()
+    load_dotenv(override=True)
 
     logging.basicConfig(level=logging.ERROR)
 
