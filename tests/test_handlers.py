@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from src.buttons import get_main_menu
-from src.handlers import about, download, service, start
+from src.handlers import about, beauty, download, service, start
 
 
 @pytest.mark.asyncio
@@ -170,3 +170,53 @@ async def test_download_no_user():
     await download(update, context)
 
     update.message.reply_text.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_beauty_no_message():
+    update = MagicMock()
+    context = MagicMock()
+    update.message = None
+
+    await beauty(update, context)
+
+
+@pytest.mark.asyncio
+async def test_beauty_no_text():
+    update = MagicMock()
+    context = MagicMock()
+    update.message.text = None
+    update.message.reply_text = AsyncMock()
+
+    await beauty(update, context)
+
+    update.message.reply_text.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_beauty_with_extra_args(monkeypatch):
+    update = MagicMock()
+    context = MagicMock()
+    update.message.text = "/beauty extra"
+    update.message.reply_text = AsyncMock()
+
+    expected_error = "Use /beauty without extra arguments."
+    monkeypatch.setattr("src.handlers.get_string", lambda user, key: expected_error)
+
+    await beauty(update, context)
+
+    update.message.reply_text.assert_awaited_once_with(expected_error)
+
+
+@pytest.mark.asyncio
+async def test_beauty_calls_handle_beauty(monkeypatch):
+    update = MagicMock()
+    context = MagicMock()
+    update.message.text = "/beauty"
+
+    mocked_handle_beauty = AsyncMock()
+    monkeypatch.setattr("src.handlers.handle_beauty", mocked_handle_beauty)
+
+    await beauty(update, context)
+
+    mocked_handle_beauty.assert_awaited_once_with(update)
