@@ -5,9 +5,9 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 import src.messages as message
-from src.beauty import handle_beauty
 from src.buttons import get_main_menu
-from src.i18n import get_string, set_user_language
+from src.core.beauty import handle_beauty
+from src.core.i18n import get_string, set_user_language
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -15,7 +15,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message and user:
         set_user_language(user.id, "en")
         await update.message.reply_text(
-            f"{get_string(user,'hello')} {user.first_name} {get_string(user,'compare')}"
+            f"{get_string(user, 'hello')} {user.first_name} {get_string(user, 'compare')}"
         )
 
 
@@ -53,7 +53,7 @@ async def service(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         services = message.getServiceString(user)
         await update.message.reply_text(
-            f"{get_string(user,'hello')} {user.first_name}.\n\n{services}",
+            f"{get_string(user, 'hello')} {user.first_name}.\n\n{services}",
             parse_mode="HTML",
         )
 

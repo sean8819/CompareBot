@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock, mock_open, patch
 
-from src.i18n import (
+from src.core.i18n import (
     _load_users_db,
     _save_users_db,
     _telegram_id_to_sha256,
@@ -46,7 +46,7 @@ def test_load_users_db_invalid_json(mock_file, mock_exists):
 
 
 @patch("builtins.open", new_callable=mock_open)
-@patch("src.i18n.json.dump")
+@patch("src.core.i18n.json.dump")
 def test_save_users_db(mock_json_dump, mock_file):
     # Verifica che la funzione provi a scrivere i dati nel file formattandoli correttamente
     dummy_data = {"user_hash_1": "en"}
@@ -55,8 +55,8 @@ def test_save_users_db(mock_json_dump, mock_file):
     mock_json_dump.assert_called_once_with(dummy_data, mock_file(), indent=4)
 
 
-@patch("src.i18n._load_users_db", return_value={})
-@patch("src.i18n._save_users_db")
+@patch("src.core.i18n._load_users_db", return_value={})
+@patch("src.core.i18n._save_users_db")
 def test_set_user_language_new_user(mock_save, mock_load):
     user_id = 12345
     set_user_language(user_id, "it")
@@ -65,9 +65,9 @@ def test_set_user_language_new_user(mock_save, mock_load):
     mock_save.assert_called_once_with({expected_hash: "it"})
 
 
-@patch("src.i18n._load_users_db")
+@patch("src.core.i18n._load_users_db")
 @patch.dict(
-    "src.i18n.translations", {"en": {"hello": "Hello"}, "it": {"hello": "Ciao"}}
+    "src.core.i18n.translations", {"en": {"hello": "Hello"}, "it": {"hello": "Ciao"}}
 )
 def test_get_string_fallback_english(mock_load):
     # Se l'utente non è nel DB, deve usare l'inglese di default
@@ -80,9 +80,9 @@ def test_get_string_fallback_english(mock_load):
     assert result == "Hello"
 
 
-@patch("src.i18n._load_users_db")
+@patch("src.core.i18n._load_users_db")
 @patch.dict(
-    "src.i18n.translations", {"en": {"hello": "Hello"}, "it": {"hello": "Ciao"}}
+    "src.core.i18n.translations", {"en": {"hello": "Hello"}, "it": {"hello": "Ciao"}}
 )
 def test_get_string_with_saved_language(mock_load):
     mock_user = MagicMock()
@@ -95,8 +95,8 @@ def test_get_string_with_saved_language(mock_load):
     assert result == "Ciao"
 
 
-@patch("src.i18n._load_users_db", return_value={})
-@patch.dict("src.i18n.translations", {"en": {}})
+@patch("src.core.i18n._load_users_db", return_value={})
+@patch.dict("src.core.i18n.translations", {"en": {}})
 def test_get_string_missing_key(mock_load):
     # Se chiediamo una stringa che non esiste nel file JSON, deve restituire la chiave stessa come fallback
     mock_user = MagicMock()

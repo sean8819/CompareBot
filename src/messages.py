@@ -1,6 +1,6 @@
 from telegram import User
 
-from src.i18n import get_string
+from src.core.i18n import get_string
 
 
 def getAboutString(user: User) -> str:

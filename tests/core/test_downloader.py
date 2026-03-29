@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import yt_dlp
 
-from src.downloader import DOWNLOAD_DIR, build_ydl_opts, get_media, get_media_size
+from src.core.downloader import DOWNLOAD_DIR, build_ydl_opts, get_media, get_media_size
 
 
 # N.B Utilizzo il prefisso di un uid 05adfd95 ... perchè ogni download avrà come prefisso un identificativo univoco.
@@ -60,7 +60,7 @@ def test_outtmpl_contains_template_titolo():
     )
 
 
-@patch("src.downloader.yt_dlp.YoutubeDL")
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
 def test_getMedia_get_filepath(mock_ydl_class):
     mock_ydl = MagicMock()
     mock_ydl.extract_info.return_value = {"title": "video", "ext": "mp4"}
@@ -71,7 +71,7 @@ def test_getMedia_get_filepath(mock_ydl_class):
     assert result == "/downloads/video.mp4"
 
 
-@patch("src.downloader.yt_dlp.YoutubeDL")
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
 def test_getMedia_extract_info(mock_ydl_class):
     mock_ydl = MagicMock()
     mock_ydl.extract_info.return_value = {"title": "video", "ext": "mp4"}
@@ -84,7 +84,7 @@ def test_getMedia_extract_info(mock_ydl_class):
     )
 
 
-@patch("src.downloader.yt_dlp.YoutubeDL")
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
 def test_getMedia_get_error_on_exception(mock_ydl_class):
     mock_ydl_class.return_value.__enter__.return_value.extract_info.side_effect = (
         yt_dlp.utils.DownloadError("Network error")
@@ -94,7 +94,7 @@ def test_getMedia_get_error_on_exception(mock_ydl_class):
     assert result == "error"
 
 
-@patch("src.downloader.yt_dlp.YoutubeDL")
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
 def test_get_media_size_returns_zero_on_error(mock_ydl_class):
     mock_ydl_class.return_value.__enter__.return_value.extract_info.side_effect = (
         yt_dlp.utils.DownloadError("errore")
@@ -104,7 +104,7 @@ def test_get_media_size_returns_zero_on_error(mock_ydl_class):
     assert result == 0
 
 
-@patch("src.downloader.yt_dlp.YoutubeDL")
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
 def test_get_media_size_returns_correct_size(mock_ydl_class):
 
     fileSize = 1024 * 1024 * 10
@@ -118,7 +118,7 @@ def test_get_media_size_returns_correct_size(mock_ydl_class):
     assert result == fileSize
 
 
-@patch("src.downloader.yt_dlp.YoutubeDL")
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
 def test_get_media_size_returns_zero_when_filesize_not_int(mock_ydl_class):
     mock_ydl_class.return_value.__enter__.return_value.extract_info.return_value = {
         "filesize": None,
@@ -129,7 +129,7 @@ def test_get_media_size_returns_zero_when_filesize_not_int(mock_ydl_class):
     assert result == 0
 
 
-@patch("src.downloader.yt_dlp.YoutubeDL")
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
 def test_get_media_size_returns_zero_when_info_is_none(mock_ydl_class):
     mock_ydl_class.return_value.__enter__.return_value.extract_info.return_value = None
 

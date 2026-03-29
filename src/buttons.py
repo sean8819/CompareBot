@@ -5,8 +5,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, User
 from telegram.error import TelegramError
 from telegram.ext import CallbackContext, ContextTypes
 
-from src.downloader import get_media, get_media_size
-from src.i18n import get_string
+from src.core.downloader import get_media, get_media_size
+from src.core.i18n import get_string
 
 
 def get_main_menu(user: User) -> InlineKeyboardMarkup:
