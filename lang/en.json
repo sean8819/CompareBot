@@ -14,7 +14,7 @@
     "download_params_error": "You need to format your message like this: /download <url>",
     "download_content": "download your content!",
     "beauty_params_error": "Please use /beauty without any additional arguments.",
-    "about_string": "⚡️ <b>Video Downloader Bot</b>\nDownload your favorite videos from YouTube and other services in seconds.\n\nCreated and maintained by the team:\n👨‍💻 Gianmarco [<a href='https://github.com/sean8819'>@sean8819</a>]\n👨‍💻 Marce [<a href='https://github.com/Marss08'>@Marss08</a>]\n👨‍💻 Enzo [<a href='https://github.com/enzobarba'>@enzobarba</a>]\n\n❤️ Thank you for choosing our bot!",
+    "about_string": "⚡️ <b>Video Downloader Bot</b>\nDownload your favorite videos from YouTube and other services in seconds.\n\nCreated and maintained by the team:\n👨‍💻 Gianmarco [<a href='https://github.com/sean8819'>@sean8819</a>]\n👨‍💻 Marce [<a href='https://github.com/Marss08'>@Marss08</a>]\n👨‍💻 Enzo [<a href='https://github.com/buggenzo'>@buggenzo</a>]\n\n❤️ Thank you for choosing our bot!",
     "services_string": "🛠 <b>My services</b>\n\n📥 <b>Media Download:</b> Send a link to easily download videos or audio tracks from YouTube and other supported services.\n\n🌍 <b>Multilingual (i18n):</b> Native support for Italian and English.\n\n🌅 <b>Daily Inspiration:</b> Receive the <i>beauty photo of the day</i> for a daily touch of wonder.\n\n",
     "lang_format_error": "⚠️ Invalid format. Use: /lang it or /lang en",
     "language_not_supported":"⚠️ Language not supported\nUse 'it' for Italian or 'en' for English.",

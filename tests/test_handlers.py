@@ -41,7 +41,7 @@ async def test_about():
         "Created and maintained by the team:\n"
         "👨‍💻 Gianmarco [<a href='https://github.com/sean8819'>@sean8819</a>]\n"
         "👨‍💻 Marce [<a href='https://github.com/Marss08'>@Marss08</a>]\n"
-        "👨‍💻 Enzo [<a href='https://github.com/enzobarba'>@enzobarba</a>]\n\n"
+        "👨‍💻 Enzo [<a href='https://github.com/buggenzo'>@buggenzo</a>]\n\n"
         "❤️ Thank you for choosing our bot!"
     )
 

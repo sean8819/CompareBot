@@ -268,4 +268,4 @@ Il progetto utilizza **GitHub Actions** con due pipeline attivate su push e pull
 |:---------|:------------| :--- |
 | Studente | Giovanni G. | [@sean8819](https://github.com/sean8819) |
 | Studente | Marce       | [@Marss08](https://github.com/Marss08) |
-| Studente | Vincenzo B. | [@enzobarba](https://github.com/enzobarba) |
+| Studente | Vincenzo B. | [@buggenzo](https://github.com/buggenzo) |
