@@ -17,6 +17,19 @@ def test_mp3_merge_format():
     assert opts["merge_output_format"] == "mp3"
 
 
+def test_mp3_has_extract_audio_postprocessor():
+    opts = build_ydl_opts(720, "mp3", "05adfd95 ...")
+    assert {
+        "key": "FFmpegExtractAudio",
+        "preferredcodec": "mp3",
+    } in opts["postprocessors"]
+
+
+def test_mp4_has_no_postprocessor():
+    opts = build_ydl_opts(1080, "mp4", "05adfd95 ...")
+    assert opts["postprocessors"] == []
+
+
 def test_mp4_format_contain_resolution():
     opts = build_ydl_opts(1080, "mp4", "05adfd95 ...")
     assert "1080" in opts["format"]
@@ -69,6 +82,17 @@ def test_getMedia_get_filepath(mock_ydl_class):
 
     result = get_media("https://youtube.com/watch?v=xxx", 720, "mp4")
     assert result == "/downloads/video.mp4"
+
+
+@patch("src.core.downloader.yt_dlp.YoutubeDL")
+def test_getMedia_mp3_returns_mp3_extension(mock_ydl_class):
+    mock_ydl = MagicMock()
+    mock_ydl.extract_info.return_value = {"title": "video", "ext": "webm"}
+    mock_ydl.prepare_filename.return_value = "/downloads/video.webm"
+    mock_ydl_class.return_value.__enter__.return_value = mock_ydl
+
+    result = get_media("https://youtube.com/watch?v=xxx", None, "mp3")
+    assert result == "/downloads/video.mp3"
 
 
 @patch("src.core.downloader.yt_dlp.YoutubeDL")
