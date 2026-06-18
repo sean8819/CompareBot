@@ -7,9 +7,16 @@ DOWNLOAD_DIR = "./tmp/downloads"
 
 
 def build_ydl_opts(video_resolution: int | None, media_type: str, download_id) -> dict:
+    postprocessors = []
     if media_type == "mp3":
         ydl_format = "bestaudio/best"
         merge_format = "mp3"
+        postprocessors.append(
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+            }
+        )
     else:
         ydl_format = f"bestvideo[height<={video_resolution}]+bestaudio/best[height<={video_resolution}]"
         merge_format = "mp4"
@@ -17,6 +24,7 @@ def build_ydl_opts(video_resolution: int | None, media_type: str, download_id) -
     return {
         "format": ydl_format,
         "merge_output_format": merge_format,
+        "postprocessors": postprocessors,
         "ffmpeg_location": "/usr/bin/ffmpeg",
         "outtmpl": os.path.join(DOWNLOAD_DIR, f"{download_id}.%(title)s.%(ext)s"),
         "quiet": False,
@@ -31,6 +39,8 @@ def get_media(video_url: str, video_resolution: int | None, media_type: str) -> 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:  # type: ignore[arg-type]
             info = ydl.extract_info(video_url, download=True)
             file_path = ydl.prepare_filename(info)
+        if media_type == "mp3":
+            file_path = os.path.splitext(file_path)[0] + ".mp3"
         return file_path
     except (yt_dlp.utils.DownloadError, yt_dlp.utils.ExtractorError):
         return "error"
