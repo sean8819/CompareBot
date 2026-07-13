@@ -27,7 +27,7 @@ def test_mp3_has_extract_audio_postprocessor():
 
 def test_mp4_has_no_postprocessor():
     opts = build_ydl_opts(1080, "mp4", "05adfd95 ...")
-    assert opts["postprocessors"] == []
+    assert not opts["postprocessors"]
 
 
 def test_mp4_format_contain_resolution():
